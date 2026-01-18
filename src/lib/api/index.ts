@@ -5,6 +5,13 @@
 // Client
 export { apiClient, updateApiConfig } from './client'
 
+// Interceptors
+export {
+  isAxiosError,
+  requestFulfilledInterceptor,
+  responseFulfilledInterceptor,
+} from './interceptors'
+
 // Types
 export type {
   ApiResponse,
@@ -12,10 +19,3 @@ export type {
   PaginationParams,
   PaginatedResponse,
 } from './types'
-
-// Interceptors
-export {
-  isAxiosError,
-  requestFulfilledInterceptor,
-  responseFulfilledInterceptor,
-} from './interceptors'

@@ -19,7 +19,7 @@ export interface ApiError {
   message: string
   code?: string
   status?: number
-  errors?: Record<string, string[]>
+  errors?: Record<string, Array<string>>
 }
 
 /**
@@ -36,7 +36,7 @@ export interface PaginationParams {
  * 分頁回應格式
  */
 export interface PaginatedResponse<T> {
-  data: T[]
+  data: Array<T>
   pagination: {
     page: number
     pageSize: number

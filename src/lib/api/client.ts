@@ -1,12 +1,12 @@
+import type { AxiosInstance } from 'axios'
 import axios from 'axios'
+import { env } from '@/lib/env'
 import {
   requestFulfilledInterceptor,
   requestRejectedInterceptor,
   responseFulfilledInterceptor,
   responseRejectedInterceptor,
 } from './interceptors'
-import type { AxiosInstance } from 'axios'
-import { env } from '@/lib/env'
 
 /**
  * 建立 Axios 實例

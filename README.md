@@ -8,6 +8,9 @@ A personal FE project template with modern tooling and best practices.
 # Install dependencies
 pnpm install
 
+# Start database (requires Docker)
+docker compose up -d
+
 # Start dev server
 pnpm dev
 

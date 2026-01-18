@@ -4,8 +4,8 @@
  * 實際使用時可以刪除此檔案
  */
 
-import { apiClient } from './index'
 import type { ApiResponse, PaginatedResponse } from './index'
+import { apiClient } from './index'
 
 // ==========================================
 // 範例 1: 基本 GET 請求
