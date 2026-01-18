@@ -67,7 +67,7 @@ updateApiConfig({
 在 `interceptors.ts` 的 `requestFulfilledInterceptor` 中添加邏輯：
 
 ```typescript
-export const requestFulfilledInterceptor = async (config) => {
+export const requestFulfilledInterceptor = async config => {
   // 1. 添加 Authentication Token
   const token = getToken() // 從你的 store 或其他地方獲取
   if (token) {
@@ -92,7 +92,7 @@ export const requestFulfilledInterceptor = async (config) => {
 在 `interceptors.ts` 的 `responseRejectedInterceptor` 中處理錯誤：
 
 ```typescript
-export const responseRejectedInterceptor = async (error) => {
+export const responseRejectedInterceptor = async error => {
   // 1. 處理 401 錯誤 (未授權)
   if (error.response?.status === 401) {
     try {

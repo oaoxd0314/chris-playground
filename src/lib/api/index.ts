@@ -6,7 +6,12 @@
 export { apiClient, updateApiConfig } from './client'
 
 // Types
-export type { ApiResponse, ApiError, PaginationParams, PaginatedResponse } from './types'
+export type {
+  ApiResponse,
+  ApiError,
+  PaginationParams,
+  PaginatedResponse,
+} from './types'
 
 // Interceptors
 export {

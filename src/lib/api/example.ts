@@ -4,13 +4,14 @@
  * 實際使用時可以刪除此檔案
  */
 
-import { apiClient, type ApiResponse, type PaginatedResponse } from './index'
+import { apiClient } from './index'
+import type { ApiResponse, PaginatedResponse } from './index'
 
 // ==========================================
 // 範例 1: 基本 GET 請求
 // ==========================================
 export const getUsers = async () => {
-  const response = await apiClient.get<ApiResponse<User[]>>('/users')
+  const response = await apiClient.get<ApiResponse<Array<User>>>('/users')
   return response.data
 }
 
@@ -50,9 +51,12 @@ export const deleteUser = async (id: string) => {
 // 範例 6: 帶查詢參數的請求
 // ==========================================
 export const searchUsers = async (params: SearchParams) => {
-  const response = await apiClient.get<PaginatedResponse<User>>('/users/search', {
-    params, // axios 會自動將 params 轉換為查詢字串
-  })
+  const response = await apiClient.get<PaginatedResponse<User>>(
+    '/users/search',
+    {
+      params, // axios 會自動將 params 轉換為查詢字串
+    }
+  )
   return response.data
 }
 
@@ -63,11 +67,15 @@ export const uploadAvatar = async (file: File) => {
   const formData = new FormData()
   formData.append('avatar', file)
 
-  const response = await apiClient.post<ApiResponse<{ url: string }>>('/users/avatar', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  })
+  const response = await apiClient.post<ApiResponse<{ url: string }>>(
+    '/users/avatar',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  )
   return response.data
 }
 
@@ -77,7 +85,7 @@ export const uploadAvatar = async (file: File) => {
 export const getUsersWithCancel = () => {
   const controller = new AbortController()
 
-  const request = apiClient.get<ApiResponse<User[]>>('/users', {
+  const request = apiClient.get<ApiResponse<Array<User>>>('/users', {
     signal: controller.signal,
   })
 
