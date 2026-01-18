@@ -1,67 +1,53 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import tseslint from 'typescript-eslint'
-import pluginReact from 'eslint-plugin-react'
-import pluginReactHooks from 'eslint-plugin-react-hooks'
-import json from '@eslint/json'
-import markdown from '@eslint/markdown'
-import css from '@eslint/css'
-import { defineConfig } from 'eslint/config'
+import { tanstackConfig } from '@tanstack/eslint-config'
+import perfectionist from 'eslint-plugin-perfectionist'
+import prettier from 'eslint-plugin-prettier/recommended'
 
-export default defineConfig([
+export default [
+  ...tanstackConfig,
+  prettier,
   {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    plugins: { js },
-    extends: ['js/recommended'],
-    languageOptions: {
-      globals: globals.browser,
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
-    },
-  },
-  ...tseslint.configs.recommended,
-  {
-    files: ['**/*.{jsx,tsx}'],
-    ...pluginReact.configs.flat.recommended,
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
-    rules: {
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-    },
-  },
-  {
-    files: ['**/*.{jsx,tsx}'],
     plugins: {
-      'react-hooks': pluginReactHooks,
+      perfectionist,
     },
     rules: {
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      'perfectionist/sort-imports': [
+        'error',
+        {
+          type: 'alphabetical',
+          order: 'asc',
+          ignoreCase: true,
+          internalPattern: ['^@/', '^~/'],
+          newlinesBetween: 0,
+          groups: [
+            'react',
+            'tanstack',
+            'type-import',
+            ['value-builtin', 'value-external'],
+            'type-internal',
+            'value-internal',
+            ['type-parent', 'type-sibling', 'type-index'],
+            ['value-parent', 'value-sibling', 'value-index'],
+            'unknown',
+          ],
+          customGroups: [
+            {
+              groupName: 'react',
+              elementNamePattern: ['^react$', '^react-.+'],
+            },
+            { groupName: 'tanstack', elementNamePattern: '^@tanstack/.+' },
+          ],
+        },
+      ],
+      'perfectionist/sort-exports': 'error',
+      'import/order': 'off',
     },
   },
   {
-    files: ['**/*.jsonc'],
-    plugins: { json },
-    language: 'json/jsonc',
-    extends: ['json/recommended'],
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/build/**',
+      'src/routeTree.gen.ts',
+    ],
   },
-  {
-    files: ['**/*.md'],
-    plugins: { markdown },
-    language: 'markdown/gfm',
-    extends: ['markdown/recommended'],
-  },
-  {
-    files: ['**/*.css'],
-    plugins: { css },
-    language: 'css/css',
-    extends: ['css/recommended'],
-  },
-])
+]

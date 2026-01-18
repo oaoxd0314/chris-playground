@@ -1,4 +1,8 @@
-import type { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
+import type {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios'
 
 /**
  * Request Interceptor - 請求發送前的處理

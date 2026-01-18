@@ -1,25 +1,23 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { todosQueryOptions, useTodos } from '@/endpoints/todo'
+import { TodoList } from '@/features/todo'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(todosQueryOptions({ order: 'newest' })),
 })
 
 function HomePage() {
+  const { data: todos } = useTodos({ order: 'newest' })
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
-      <div className="text-center px-6">
-        <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">Welcome to Your App</h1>
-        <p className="text-xl text-gray-400 mb-8">Start building something amazing</p>
-        <div className="space-y-2 text-sm text-gray-500">
-          <p>
-            Edit{' '}
-            <code className="px-2 py-1 bg-slate-700 rounded text-cyan-400">
-              src/routes/index.tsx
-            </code>{' '}
-            to get started
-          </p>
-        </div>
-      </div>
+    <div className="project-container">
+      <h1 className="mb-6 text-2xl font-bold">Todos</h1>
+
+      <ul className="space-y-2">
+        <TodoList todos={todos} />
+      </ul>
     </div>
   )
 }

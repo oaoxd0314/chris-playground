@@ -1,7 +1,13 @@
 import { Link, useRouter } from '@tanstack/react-router'
 import { AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 interface ErrorBoundaryProps {
   error: Error
@@ -20,18 +26,21 @@ export function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 p-4">
-      <Card className="w-full max-w-md border-destructive">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 p-4">
+      <Card className="border-destructive w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <AlertCircle className="w-16 h-16 text-destructive" />
+          <div className="mb-4 flex justify-center">
+            <AlertCircle className="text-destructive h-16 w-16" />
           </div>
           <CardTitle className="text-3xl">Oops!</CardTitle>
-          <CardDescription className="text-lg">Something went wrong</CardDescription>
+
+          <CardDescription className="text-lg">
+            Something went wrong
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="bg-muted p-3 rounded-md">
-            <p className="text-sm font-mono text-destructive break-words">
+          <div className="bg-muted rounded-md p-3">
+            <p className="text-destructive font-mono text-sm break-words">
               {error.message || 'An unexpected error occurred'}
             </p>
           </div>

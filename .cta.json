@@ -5,8 +5,12 @@
   "tailwind": true,
   "packageManager": "pnpm",
   "git": true,
-  "addOnOptions": {},
+  "addOnOptions": {
+    "drizzle": {
+      "databaseType": "postgresql"
+    }
+  },
   "version": 1,
   "framework": "react-cra",
-  "chosenAddOns": ["start", "tanstack-query", "nitro"]
+  "chosenAddOns": ["start", "tanstack-query", "nitro", "drizzle"]
 }

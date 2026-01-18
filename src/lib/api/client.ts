@@ -1,4 +1,5 @@
-import axios, { type AxiosInstance } from 'axios'
+import type { AxiosInstance } from 'axios'
+import axios from 'axios'
 import { env } from '@/lib/env'
 import {
   requestFulfilledInterceptor,
@@ -20,10 +21,16 @@ const createApiClient = (): AxiosInstance => {
   })
 
   // 註冊 Request Interceptors
-  client.interceptors.request.use(requestFulfilledInterceptor, requestRejectedInterceptor)
+  client.interceptors.request.use(
+    requestFulfilledInterceptor,
+    requestRejectedInterceptor
+  )
 
   // 註冊 Response Interceptors
-  client.interceptors.response.use(responseFulfilledInterceptor, responseRejectedInterceptor)
+  client.interceptors.response.use(
+    responseFulfilledInterceptor,
+    responseRejectedInterceptor
+  )
 
   return client
 }
