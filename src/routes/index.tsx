@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { todosQueryOptions, useTodos } from '@/endpoints/todo'
 import { TodoList } from '@/features/todo'
 
@@ -11,7 +12,10 @@ function HomePage() {
 
   return (
     <div className="project-container">
-      <h1 className="mb-6 text-2xl font-bold">Todos</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Todos</h1>
+        <ThemeToggle />
+      </div>
 
       <ul className="space-y-2">{/* <TodoList todos={todos} /> */}</ul>
     </div>
