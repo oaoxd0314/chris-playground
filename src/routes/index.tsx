@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { todosQueryOptions, useTodos } from '@/endpoints/todo'
-import { TodoList } from '@/features/todo'
+import { TodoList, useTodos } from '@/features/todo'
 
 export const Route = createFileRoute('/')({
   component: HomePage,

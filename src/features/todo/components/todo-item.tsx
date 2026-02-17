@@ -9,8 +9,8 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useDeleteTodo, useToggleTodo, useUpdateTodo } from '@/endpoints/todo'
-import type { Todo } from '.'
+import type { Todo } from '../types'
+import { useDeleteTodo, useToggleTodo, useUpdateTodo } from '../hooks'
 
 export const todoItemClass = cva('flex items-center gap-3 rounded border p-3', {
   variants: {
