@@ -6,6 +6,7 @@ import {
   createRootRouteWithContext,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { AppProviders } from '@/components/app-providers'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { NotFound } from '@/components/shared/NotFound'
 import TanStackQueryDevtools from '@/integrations/tanstack-query/devtools'
@@ -44,12 +45,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body>
-        {children}
+      <body className="bg-background text-foreground">
+        <AppProviders>{children}</AppProviders>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
