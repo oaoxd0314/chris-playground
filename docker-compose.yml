@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: fe-init-postgres
+    container_name: chris-playground-postgres
     hostname: ${DB_HOST}
     restart: unless-stopped
     environment:

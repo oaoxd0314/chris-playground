@@ -9,6 +9,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { AppProviders } from '@/components/app-providers'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { NotFound } from '@/components/shared/NotFound'
+import { ThemeProvider } from '@/components/theme'
 import TanStackQueryDevtools from '@/integrations/tanstack-query/devtools'
 import appCss from '@/styles.css?url'
 

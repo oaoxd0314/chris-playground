@@ -46,7 +46,7 @@
 }
 
 body {
-  @apply m-0;
+  @apply bg-background text-foreground m-0;
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -60,5 +60,5 @@ code {
 }
 
 @utility project-container {
-  @apply mx-auto max-w-2xl p-8;
+  @apply bg-background text-foreground mx-auto min-h-screen max-w-2xl p-8;
 }

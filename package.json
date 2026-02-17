@@ -15,7 +15,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:shell": "docker exec -it fe-init-postgres psql -U postgres -d fe_init_db"
+    "db:shell": "docker exec -it chris-playground-postgres psql -U postgres -d chris_playground"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
