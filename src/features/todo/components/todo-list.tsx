@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { PlusIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import type { Todo } from './type'
-import { TodoForm, TodoItem } from '.'
+import type { Todo } from '../types'
+import { TodoForm } from './todo-form'
+import { TodoItem } from './todo-item'
 
 export const TodoList = ({ todos }: { todos: Array<Todo> }) => {
   const [isTodoFormOpen, setIsTodoFormOpen] = useState(false)

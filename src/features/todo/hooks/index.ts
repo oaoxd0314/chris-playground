@@ -4,18 +4,16 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query'
-import type { TodoOrder } from '@/server/functions/todos/schema'
-import {
-  createTodoFn,
-  deleteTodoFn,
-  getTodosFn,
-  toggleTodoFn,
-  updateTodoFn,
-} from '@/server/functions/todos'
+import type { Todo } from '../types'
+
+export type TodoOrder = 'newest' | 'oldest'
 
 type TodosOptions = {
   order?: TodoOrder
 }
+
+let todos: Array<Todo> = []
+let nextId = 1
 
 export const todoKeys = {
   all: (options?: TodosOptions) => ['todos', options] as const,
@@ -31,7 +29,7 @@ const sortByCreatedAt = (order: TodoOrder) => {
 export const todosQueryOptions = (options?: TodosOptions) =>
   queryOptions({
     queryKey: todoKeys.all(options),
-    queryFn: () => getTodosFn(),
+    queryFn: () => todos,
     select: data =>
       options?.order ? [...data].sort(sortByCreatedAt(options.order)) : data,
   })
@@ -43,7 +41,17 @@ export function useTodos(options?: TodosOptions) {
 export function useCreateTodo() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (name: string) => createTodoFn({ data: { name } }),
+    mutationFn: (name: string) => {
+      const newTodo: Todo = {
+        id: nextId++,
+        name,
+        isCompleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      todos = [...todos, newTodo]
+      return newTodo
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
   })
 }
@@ -51,7 +59,12 @@ export function useCreateTodo() {
 export function useUpdateTodo() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: { id: number; name: string }) => updateTodoFn({ data }),
+    mutationFn: (data: { id: number; name: string }) => {
+      todos = todos.map(t =>
+        t.id === data.id ? { ...t, name: data.name, updatedAt: new Date() } : t
+      )
+      return data
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
   })
 }
@@ -59,8 +72,14 @@ export function useUpdateTodo() {
 export function useToggleTodo() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: { id: number; isCompleted: boolean }) =>
-      toggleTodoFn({ data }),
+    mutationFn: (data: { id: number; isCompleted: boolean }) => {
+      todos = todos.map(t =>
+        t.id === data.id
+          ? { ...t, isCompleted: data.isCompleted, updatedAt: new Date() }
+          : t
+      )
+      return data
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
   })
 }
@@ -68,7 +87,10 @@ export function useToggleTodo() {
 export function useDeleteTodo() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (id: number) => deleteTodoFn({ data: { id } }),
+    mutationFn: (id: number) => {
+      todos = todos.filter(t => t.id !== id)
+      return id
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
   })
 }
