@@ -1,0 +1,11 @@
+[[rules]]
+name = "allow-search"
+toolName = "GoogleWebSearch"
+action = "allow"
+priority = 1000
+
+[[rules]]
+name = "allow-fetch"
+toolName = "WebFetch"
+action = "allow"
+priority = 1000 
