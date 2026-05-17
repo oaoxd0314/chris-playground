@@ -49,6 +49,7 @@ export default [
       '**/build/**',
       'src/routeTree.gen.ts',
       '.claude/**',
+      '.storybook/**',
     ],
   },
 ]
