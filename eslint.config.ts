@@ -48,6 +48,7 @@ export default [
       '**/node_modules/**',
       '**/build/**',
       'src/routeTree.gen.ts',
+      '.claude/**',
     ],
   },
 ]
