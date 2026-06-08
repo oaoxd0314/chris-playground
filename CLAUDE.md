@@ -2,71 +2,86 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+This is a **frontend-only** project. There is no backend, server, or database — data lives in-memory and is served through TanStack Query. Do not introduce server functions, ORMs, or databases.
+
 ## Commands
 
 ```bash
 pnpm dev              # Start dev server (port 3000)
 pnpm build            # Production build
-pnpm test             # Run tests
+pnpm preview          # Preview production build
+pnpm test             # Run tests (vitest)
 pnpm lint             # Check linting
 pnpm lint:fix         # Fix linting issues
-pnpm format           # Format all files
-
-# Database
-docker compose up -d  # Start PostgreSQL
-pnpm db:generate      # Generate migrations from schema changes
-pnpm db:migrate       # Apply migrations
-pnpm db:push          # Push schema directly (dev only)
-pnpm db:studio        # Open Drizzle Studio web UI
+pnpm format           # Format all files (prettier)
+pnpm storybook        # Start Storybook (port 6006)
 ```
 
 ## Architecture
 
 ### Data Flow Pattern
 
+Data is held in-memory (module-level state inside each feature's hooks) and exposed through TanStack Query.
+
 ```
-Route (loader) → Server Function → Database
+Route (loader / component) → Query Hook → in-memory store
      ↓
-Component → Query Hook → Server Function → Database
-     ↓
-Mutation Hook → Server Function → Database → Invalidate Queries
+Mutation Hook → update in-memory store → invalidate queries
 ```
 
 ### Key Directories
 
-- `src/server/functions/` - Server functions with `createServerFn`, includes Zod schemas
-- `src/endpoints/` - TanStack Query hooks wrapping server functions (query keys, options, mutations)
-- `src/features/` - Feature modules with domain components
-- `src/components/ui/` - shadcn/ui base components
-- `src/db/` - Drizzle schema and connection
-
-### Server Function Pattern
-
-```typescript
-// src/server/functions/[feature]/schema.ts - Zod schemas
-// src/server/functions/[feature]/index.ts - Server functions
-export const createTodoFn = createServerFn({ method: 'POST' })
-  .inputValidator(createTodoSchema)
-  .handler(async ({ data }) => { ... })
-```
+- `src/routes/` - File-based routes (TanStack Router): `__root.tsx`, `index.tsx`, `todo/index.tsx`
+- `src/features/[feature]/` - Feature module: `index.tsx`, `types.ts`, `components/`, `hooks/`
+- `src/components/ui/` - shadcn/ui base components (new-york style)
+- `src/components/shared/` - Cross-feature components (ErrorBoundary, NotFound)
+- `src/components/theme/` - Theme provider + toggle
+- `src/hooks/` - Shared hooks (breakpoints, media-query, theme)
+- `src/lib/utils.ts` - Utilities (`cn`, etc.)
+- `src/integrations/tanstack-query/` - Query client provider + devtools
 
 ### Query Hook Pattern
 
+Each feature owns its data and query hooks in `src/features/[feature]/hooks/index.ts`. Data is module-level state — no fetch, no server.
+
 ```typescript
-// src/endpoints/[feature].ts
-const todoKeys = { all: (opts?) => ['todos', opts], detail: (id) => ['todos', id] }
-export const todosQueryOptions = (opts?) => queryOptions({ queryKey: todoKeys.all(opts), queryFn: () => getTodosFn() })
-export function useTodos(opts?) { return useSuspenseQuery(todosQueryOptions(opts)) }
-export function useCreateTodo() { return useMutation({ mutationFn: ..., onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }) }) }
+// src/features/todo/hooks/index.ts
+let todos: Array<Todo> = []
+
+export const todoKeys = {
+  all: (options?: TodosOptions) => ['todos', options] as const,
+  detail: (id: number) => ['todos', id] as const,
+}
+
+export const todosQueryOptions = (options?: TodosOptions) =>
+  queryOptions({ queryKey: todoKeys.all(options), queryFn: () => todos })
+
+export function useTodos(options?: TodosOptions) {
+  return useSuspenseQuery(todosQueryOptions(options))
+}
+
+export function useCreateTodo() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (name: string) => {
+      todos = [...todos /* ... */]
+      return newTodo
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
+  })
+}
 ```
+
+Domain types live in `src/features/[feature]/types.ts`.
 
 ## Tech Stack
 
 - TanStack Start (React 19) + Router + Query
-- Drizzle ORM with PostgreSQL
-- Tailwind CSS v4 + shadcn/ui
-- Zod for validation
-- Vitest for testing
+- Tailwind CSS v4 (CSS-based config in `src/styles.css`) + shadcn/ui (new-york)
+- Vitest + Testing Library for testing
+- Storybook for component development
+
+Installed but not yet used: `zustand` (client state), `zod` (validation). Wire them in when a real need shows up — don't add usage for its own sake.
 
 ## Code Style
 
@@ -84,21 +99,7 @@ Format: `type(scope): description`
 
 Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `revert`
 
-Scope from folder: `components`, `hooks`, `server`, `db`, `endpoints`, `features`
-
-## Schema Architecture
-
-Two-layer schema design:
-
-1. **DB Schema** (`src/db/schema.ts`) - Table definitions with Drizzle ORM
-2. **App Schema** (`src/server/functions/*/schema.ts`) - API input/output validation with Zod, shared by client and server
-
-When adding a new API endpoint:
-
-- If the table doesn't exist → define DB schema first
-- If the table exists → define App schema directly
-
-App schema differs from DB schema because API requests rarely require all table columns.
+Scope from folder: `components`, `hooks`, `features`, `lib`, `routes`, `integrations`
 
 ## Verification Rule
 
@@ -106,7 +107,7 @@ When adding new rules or logic to this project, create quiz questions to verify 
 
 Quiz guidelines:
 
-- Questions must be semantically clear (specify: server/client, new feature/existing feature, etc.)
+- Questions must be semantically clear (specify: new feature/existing feature, etc.)
 - Allow the user to ask clarifying questions about the quiz before answering
 - Mix question types: multiple choice AND short answer/essay questions
 - Only accept changes after the user demonstrates understanding
