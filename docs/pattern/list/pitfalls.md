@@ -14,6 +14,7 @@
 | [`isEmpty` 顯示時機錯誤](#5-isempty-在-loading-時就顯示)                                     | NoData 在 loading 時閃爍              |
 | [Dependent query 不觸發](#6-dependent-query-沒有觸發)                                        | List 帶 reference ID 需要 batch fetch |
 | [Cross-portal actions 兩邊不一致](#7-cross-portal-某邊缺-action)                             | 跨 portal 共用                        |
+| [手刻 select-all header](#8-手刻-select-all-忽略內建已尊重-enablerowselection)               | 有 `enableRowSelection` predicate     |
 | [`autoResetPageIndex` 不認 server pagination](#1-pattern-a-search--filter-變更沒-reset-page) | manualPagination                      |
 
 ---
@@ -175,6 +176,54 @@ ActionCell 共用，沒傳入的 action 會被隱藏 → 使用者在某 portal 
 
 ---
 
+## 8. 手刻 select-all 忽略內建已尊重 `enableRowSelection`
+
+當 table 設了 `enableRowSelection: row => canSelect(row.original)`，**TanStack 內建的整頁選取函式已經會自動過濾不可選的列**，不需要自己 `filter + every/some + forEach(toggleSelected)`。
+
+`getIsAllPageRowsSelected()` / `getIsSomePageRowsSelected()` / `toggleAllPageRowsSelected()` 內部都會用 `row.getCanSelect()` 篩選，而 `getCanSelect()` 最終讀的就是 `enableRowSelection`：
+
+- `toggleAllPageRowsSelected(true)` → 經 `mutateRowIsSelected`，只有 `row.getCanSelect()` 為 true 的列會進 selection。
+- `getIsAllPageRowsSelected()` → 先 `.filter(row => row.getCanSelect())` 才判斷「是否全選」。
+- `getIsSomePageRowsSelected()` → 同樣先 filter 再 `.some(...)`，indeterminate 語意自動正確。
+
+```tsx
+// ❌ 手刻一份 selection 邏輯，跟內建重複、之後容易 drift
+header: ({ table }) => {
+  const selectable = table
+    .getRowModel()
+    .rows.filter(row => isDeletable(row.original))
+  const allSelected =
+    selectable.length > 0 && selectable.every(row => row.getIsSelected())
+  // ...自己 forEach(toggleSelected)
+}
+
+// ✅ 直接靠內建，只保留「沒有可選列時隱藏」的 guard
+header: ({ table }) => {
+  const hasSelectable = table
+    .getPaginationRowModel()
+    .flatRows.some(row => row.getCanSelect())
+  if (!hasSelectable) return null
+
+  return (
+    <Checkbox.Root
+      value={
+        table.getIsAllPageRowsSelected() ||
+        (table.getIsSomePageRowsSelected() && 'indeterminate')
+      }
+      onChange={checked => table.toggleAllPageRowsSelected(!!checked)}
+      aria-label="Select all selectable rows"
+    />
+  )
+}
+```
+
+注意：
+
+- `toggleAllPageRows*` / `getIsAllPageRows*` 都是 **page-scoped**（只作用當前分頁）。要跨頁全選請改用 `toggleAllRowsSelected` / `getIsAllRowsSelected`。
+- guard 用 `getPaginationRowModel().flatRows` 跟內建判斷基準一致；扁平表用 `getRowModel().rows` 也等價，但有 grouping / sub-rows 時兩者不同。
+
+---
+
 ## Bonus: Quick Self-Check
 
 開 PR 前對照一次：
@@ -188,6 +237,7 @@ ActionCell 共用，沒傳入的 action 會被隱藏 → 使用者在某 portal 
 - [ ] 搜尋 / filter 欄位用 `accessor()` 不是 `display()`
 - [ ] Pattern A: search / filter 變更同步 `setPage(1)`
 - [ ] 跨 portal: 兩邊 endpoints + `useXXXList` 都實作所有 actions
+- [ ] select-all header 靠內建 `toggleAllPageRowsSelected` 等函式，沒手刻 filter + selection 邏輯
 
 ---
 

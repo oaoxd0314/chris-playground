@@ -1,6 +1,7 @@
 {
   "mcpServers": {
     "tanstack-documentation-mcp": {
+      "type": "http",
       "url": "https://tanstack.com/api/mcp"
     }
   }

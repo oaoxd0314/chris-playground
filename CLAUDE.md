@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-This is a **frontend-only** project. There is no backend, server, or database — data lives in-memory and is served through TanStack Query. Do not introduce server functions, ORMs, or databases.
+This is currently a **frontend-only** project: data lives in-memory and is served through TanStack Query, because there's no backend scenario yet. Server functions / ORMs / databases aren't banned — they're just out of scope today. If a change adds one, flag it for confirmation ("是刻意要接後端嗎？") rather than rejecting it.
 
 ## Commands
 
