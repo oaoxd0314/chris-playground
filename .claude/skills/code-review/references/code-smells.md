@@ -308,6 +308,47 @@ const selectedRows = useMemo(
 
 ---
 
+### Hand-rolled select-all that re-implements `enableRowSelection`
+
+**Symptom**: A `@tanstack/react-table` select-all header that does `filter + every/some + forEach(toggleSelected)` by hand, when the table already has `enableRowSelection: row => canSelect(row.original)`.
+
+**Why this matters**: The built-in page-selection functions already respect `enableRowSelection`. `toggleAllPageRowsSelected()`, `getIsAllPageRowsSelected()`, and `getIsSomePageRowsSelected()` all filter by `row.getCanSelect()` (which reads `enableRowSelection`). Hand-rolling a parallel selection path duplicates that logic and will drift from the predicate over time (Single Source rule).
+
+```tsx
+// ❌ re-implements selection, can drift from enableRowSelection
+header: ({ table }) => {
+  const selectable = table
+    .getRowModel()
+    .rows.filter(r => isDeletable(r.original))
+  const allSelected =
+    selectable.length > 0 && selectable.every(r => r.getIsSelected())
+  // ...manual forEach(toggleSelected)
+}
+
+// ✅ lean on the built-ins; keep only the "hide when nothing selectable" guard
+header: ({ table }) => {
+  const hasSelectable = table
+    .getPaginationRowModel()
+    .flatRows.some(r => r.getCanSelect())
+  if (!hasSelectable) return null
+  return (
+    <Checkbox.Root
+      value={
+        table.getIsAllPageRowsSelected() ||
+        (table.getIsSomePageRowsSelected() && 'indeterminate')
+      }
+      onChange={checked => table.toggleAllPageRowsSelected(!!checked)}
+    />
+  )
+}
+```
+
+**Note**: `*PageRows*` is page-scoped (current page only); use `toggleAllRowsSelected` / `getIsAllRowsSelected` for cross-page select-all. See `docs/pattern/list/pitfalls.md#8`.
+
+**Priority**: Medium (works today, but duplicated logic)
+
+---
+
 ### Unneeded `useCallback` / `useMemo` in a Plain Component
 
 **Symptom**: Memoizing simple values or handlers in a regular component (not a custom hook)

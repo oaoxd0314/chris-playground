@@ -100,6 +100,7 @@ Read `docs/pattern/list/README.md` (then `hooks.md` / `patterns.md` / `pitfalls.
 - Column hook stability
 - Pattern selection (server / client / hybrid) — here, data is in-memory
 - **Stable-reference dep trap** (`useMemo([table])`) — see `pitfalls.md` and code-smells
+- **Select-all header** — when `enableRowSelection` is a predicate, the built-in `toggleAllPageRowsSelected` / `getIsAllPageRowsSelected` / `getIsSomePageRowsSelected` already filter by `getCanSelect()`. Flag hand-rolled `filter + every/some + forEach(toggleSelected)` as redundant; keep only the "hide when nothing selectable" guard. See `docs/pattern/list/pitfalls.md#8`
 
 ## Composition Pattern
 
