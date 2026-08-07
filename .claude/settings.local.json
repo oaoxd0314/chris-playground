@@ -1,0 +1,4 @@
+{
+  "enabledMcpjsonServers": ["tanstack-documentation-mcp"],
+  "enableAllProjectMcpServers": true
+}
